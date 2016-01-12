@@ -485,7 +485,7 @@ public class _ActionSheetRow<T: Equatable>: OptionsRow<T, AlertSelectorCell<T>>,
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if let presentationMode = presentationMode where !isDisabled {
+        if let presentationMode = presentationMode where !isDisabled && !isReadOnly {
             if let controller = presentationMode.createController(){
                 controller.row = self
                 onPresentCallback?(cell.formViewController()!, controller)
@@ -519,7 +519,7 @@ public class _AlertRow<T: Equatable>: OptionsRow<T, AlertSelectorCell<T>>, Prese
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if let presentationMode = presentationMode where !isDisabled  {
+        if let presentationMode = presentationMode where !isDisabled && !isReadOnly {
             if let controller = presentationMode.createController(){
                 controller.row = self
                 onPresentCallback?(cell.formViewController()!, controller)
@@ -667,7 +667,7 @@ public class _ButtonRowOf<T: Equatable> : Row<T, ButtonCellOf<T>> {
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             if let presentationMode = presentationMode {
                 if let controller = presentationMode.createController(){
                     presentationMode.presentViewController(controller, row: self, presentingViewController: self.cell.formViewController()!)
@@ -683,7 +683,7 @@ public class _ButtonRowOf<T: Equatable> : Row<T, ButtonCellOf<T>> {
         super.customUpdateCell()
         let leftAligmnment = presentationMode != nil
         cell.textLabel?.textAlignment = leftAligmnment ? .Left : .Center
-        cell.accessoryType = !leftAligmnment || isDisabled ? .None : .DisclosureIndicator
+        cell.accessoryType = !leftAligmnment || isDisabled || isReadOnly ? .None : .DisclosureIndicator
         cell.editingAccessoryType = cell.accessoryType
         if (!leftAligmnment){
             var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
@@ -717,7 +717,7 @@ public class _ButtonRowWithPresent<T: Equatable, VCType: TypedRowControllerType 
         super.customUpdateCell()
         let leftAligmnment = presentationMode != nil
         cell.textLabel?.textAlignment = leftAligmnment ? .Left : .Center
-        cell.accessoryType = !leftAligmnment || isDisabled ? .None : .DisclosureIndicator
+        cell.accessoryType = !leftAligmnment || isDisabled || isReadOnly ? .None : .DisclosureIndicator
         cell.editingAccessoryType = cell.accessoryType
         if (!leftAligmnment){
             var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
@@ -731,7 +731,7 @@ public class _ButtonRowWithPresent<T: Equatable, VCType: TypedRowControllerType 
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             if let presentationMode = presentationMode {
                 if let controller = presentationMode.createController(){
                     controller.row = self
@@ -854,7 +854,7 @@ public final class DateInlineRow: _DateInlineRow, RowType, InlineRowType {
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -875,7 +875,7 @@ public final class TimeInlineRow: _TimeInlineRow, RowType, InlineRowType {
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -896,7 +896,7 @@ public final class DateTimeInlineRow: _DateTimeInlineRow, RowType, InlineRowType
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -917,7 +917,7 @@ public final class CountDownInlineRow: _CountDownInlineRow, RowType, InlineRowTy
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -1187,7 +1187,7 @@ public final class PickerInlineRow<T where T: Equatable> : _PickerInlineRow<T>, 
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }

@@ -59,7 +59,7 @@ public class ButtonCellOf<T: Equatable>: Cell<T>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
         accessoryType = .None
         editingAccessoryType = accessoryType
         textLabel?.textAlignment = .Center
@@ -151,7 +151,7 @@ public class _FieldCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T>, 
         }
         textField.delegate = self
         textField.text = row.displayValueFor?(row.value)
-        textField.enabled = !row.isDisabled
+        textField.enabled = !row.isDisabled && !row.isReadOnly
         textField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         textField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         if let placeholder = (row as? FieldRowConformance)?.placeholder {
@@ -165,7 +165,7 @@ public class _FieldCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T>, 
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textField.canBecomeFirstResponder()
+        return !row.isDisabled && !row.isReadOnly && textField.canBecomeFirstResponder()
     }
     
     public override func cellBecomeFirstResponder() -> Bool {
@@ -468,7 +468,7 @@ public class DateCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
         detailTextLabel?.text = row.displayValueFor?(row.value)
         datePicker.setDate(row.value ?? NSDate(), animated: row is CountDownPickerRow)
         datePicker.minimumDate = (row as? _DatePickerRowProtocol)?.minimumDate
@@ -515,7 +515,7 @@ public class DateCell : Cell<NSDate>, CellType {
     }
     
     public override func canBecomeFirstResponder() -> Bool {
-        return !row.isDisabled;
+        return !row.isDisabled && !row.isReadOnly;
     }
 }
 
@@ -532,7 +532,7 @@ public class DateInlineCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
         detailTextLabel?.text = row.displayValueFor?(row.value)
     }
     
@@ -568,8 +568,8 @@ public class DatePickerCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
-        datePicker.userInteractionEnabled = !row.isDisabled
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
+        datePicker.userInteractionEnabled = !row.isDisabled && !row.isReadOnly
         detailTextLabel?.text = nil
         textLabel?.text = nil
         datePicker.setDate(row.value ?? NSDate(), animated: row is CountDownPickerRow)
@@ -699,7 +699,7 @@ public class _TextAreaCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T
         super.update()
         textLabel?.text = nil
         detailTextLabel?.text = nil
-        textView.editable = !row.isDisabled
+        textView.editable = !row.isDisabled && !row.isReadOnly
         textView.textColor = row.isDisabled ? .grayColor() : .blackColor()
         textView.text = row.displayValueFor?(row.value)
         placeholderLabel.text = (row as? TextAreaConformance)?.placeholder
@@ -708,7 +708,7 @@ public class _TextAreaCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textView.canBecomeFirstResponder()
+        return !row.isDisabled && !row.isReadOnly && textView.canBecomeFirstResponder()
     }
     
     public override func cellBecomeFirstResponder() -> Bool {
@@ -882,7 +882,7 @@ public class SwitchCell : Cell<Bool>, CellType {
     public override func update() {
         super.update()
         switchControl?.on = row.value ?? false
-        switchControl?.enabled = !row.isDisabled
+        switchControl?.enabled = !row.isDisabled && !row.isReadOnly
     }
     
     func valueChanged() {
@@ -931,7 +931,7 @@ public class SegmentedCell<T: Equatable> : Cell<T>, CellType {
 
         updateSegmentedControl()
         segmentedControl.selectedSegmentIndex = selectedIndex() ?? UISegmentedControlNoSegment
-        segmentedControl.enabled = !row.isDisabled
+        segmentedControl.enabled = !row.isDisabled && !row.isReadOnly
     }
     
     func valueChanged() {
@@ -1014,7 +1014,7 @@ public class AlertSelectorCell<T: Equatable> : Cell<T>, CellType {
         super.update()
         accessoryType = .None
         editingAccessoryType = accessoryType
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
     }
     
     public override func didSelect() {
@@ -1033,7 +1033,7 @@ public class PushSelectorCell<T: Equatable> : Cell<T>, CellType {
         super.update()
         accessoryType = .DisclosureIndicator
         editingAccessoryType = accessoryType
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = row.isDisabled || row.isReadOnly ? .None : .Default
     }
 }
 

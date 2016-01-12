@@ -78,7 +78,7 @@ class HomeViewController : FormViewController {
                     row.title = row.tag
                     row.presentationMode = .SegueName(segueName: "DisabledRowsControllerSegue", completionCallback: nil)
                 }
-            
+			
                 <<< ButtonRow("Formatters") { (row: ButtonRow) -> Void in
                     row.title = row.tag
                     row.presentationMode = .SegueName(segueName: "FormattersControllerSegue", completionCallback: nil)
@@ -237,7 +237,13 @@ class RowsExampleViewController: FormViewController {
                         $0.value = "+598 9898983510"
                         $0.disabled = true
                     }
-            
+			
+				<<< PhoneRow() {
+					$0.title = "PhoneRow (read-only)"
+					$0.value = "+598 9898983510"
+					$0.readOnly = true
+				}
+			
                 <<< NameRow() {
                         $0.title =  "NameRow"
                     }

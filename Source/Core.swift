@@ -1106,6 +1106,12 @@ protocol Hidable: Taggable {
     var isHidden : Bool { get }
 }
 
+protocol ReadOnlyable: Taggable {
+  func evaluateReadOnly()
+  var readOnly : Condition? { get set }
+  var isReadOnly : Bool { get }
+}
+
 extension PresenterRowType {
     
     /**
@@ -1341,13 +1347,22 @@ public class BaseRow : BaseRowType {
         willSet { removeFromHiddenRowObservers() }
         didSet  { addToHiddenRowObservers() }
     }
-    
+  
+    /// Condition that determines if the row should be read only or not.
+    public var readOnly : Condition? {
+        willSet { removeFromReadOnlyRowObservers() }
+        didSet  { addToReadOnlyRowObservers() }
+    }
+  
     /// Returns if this row is currently disabled or not
     public var isDisabled : Bool { return disabledCache }
     
     /// Returns if this row is currently hidden or not
     public var isHidden : Bool { return hiddenCache }
-    
+  
+    /// Returns if this row is currently read only or not
+    public var isReadOnly : Bool { return readOnlyCache }
+  
     /// The section to which this row belongs.
     public weak var section: Section?
 
@@ -1393,9 +1408,16 @@ public class BaseRow : BaseRowType {
             }
         }
     }
+    private var readOnlyCache = false {
+        willSet {
+            if newValue == true && readOnlyCache == false  {
+                baseCell.cellResignFirstResponder()
+            }
+        }
+    }
 }
 
-extension BaseRow: Equatable, Hidable, Disableable {}
+extension BaseRow: Equatable, Hidable, Disableable, ReadOnlyable {}
 
 public func ==(lhs: BaseRow, rhs: BaseRow) -> Bool{
     return lhs === rhs
@@ -1435,7 +1457,21 @@ extension BaseRow {
         }
         updateCell()
     }
-    
+	
+	/**
+	Evaluates if the row should be read only or not and updates it accordingly
+	*/
+	public final func evaluateReadOnly() {
+		guard let r = readOnly, form = section?.form else { return }
+		switch r {
+		case .Function(_ , let callback):
+			readOnlyCache = callback(form)
+		case .Predicate(let predicate):
+			readOnlyCache = predicate.evaluateWithObject(self, substitutionVariables: form.dictionaryValuesToEvaluatePredicate())
+		}
+		updateCell()
+	}
+	
     private final func wasAddedToFormInSection(section: Section) {
         self.section = section
         if let t = tag {
@@ -1445,6 +1481,7 @@ extension BaseRow {
         addToRowObservers()
         evaluateHidden()
         evaluateDisabled()
+		evaluateReadOnly()
     }
     
     private final func addToHiddenRowObservers() {
@@ -1466,10 +1503,21 @@ extension BaseRow {
                 section?.form?.addRowObservers(self, rowTags: predicate.predicateVars, type: .Disabled)
         }
     }
-    
+	
+	private final func addToReadOnlyRowObservers() {
+		guard let r = readOnly else { return }
+		switch r {
+		case .Function(let tags, _):
+			section?.form?.addRowObservers(self, rowTags: tags, type: .ReadOnly)
+		case .Predicate(let predicate):
+			section?.form?.addRowObservers(self, rowTags: predicate.predicateVars, type: .ReadOnly)
+		}
+	}
+	
     private final func addToRowObservers(){
         addToHiddenRowObservers()
         addToDisabledRowObservers()
+		addToReadOnlyRowObservers()
     }
     
     private final func willBeRemovedFromForm(){
@@ -1500,11 +1548,21 @@ extension BaseRow {
                 section?.form?.removeRowObservers(self, rows: predicate.predicateVars, type: .Disabled)
         }
     }
-    
-    
+	
+	private final func removeFromReadOnlyRowObservers() {
+		guard let r = readOnly else { return }
+		switch r {
+		case .Function(let tags, _):
+			section?.form?.removeRowObservers(self, rows: tags, type: .ReadOnly)
+		case .Predicate(let predicate):
+			section?.form?.removeRowObservers(self, rows: predicate.predicateVars, type: .ReadOnly)
+		}
+	}
+	
     private final func removeFromRowObservers(){
         removeFromHiddenRowObservers()
         removeFromDisabledRowObservers()
+		removeFromReadOnlyRowObservers()
     }
 }
 
@@ -1530,9 +1588,14 @@ public class RowOf<T: Equatable>: BaseRow {
                     (rowObserver as? Disableable)?.evaluateDisabled()
                 }
             }
+			if let rowObservers = form.rowObservers[t]?[.ReadOnly]{
+				for rowObserver in rowObservers {
+					(rowObserver as? ReadOnlyable)?.evaluateReadOnly()
+				}
+			}
         }
     }
-    
+	
     /// The untyped value of this row.
     public override var baseValue: Any? {
         get { return value }
@@ -1608,7 +1671,7 @@ public class Row<T: Equatable, Cell: CellType where Cell: BaseCell, Cell.Value =
      */
     public override func didSelect() {
         super.didSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             cell?.didSelect()
         }
         customDidSelect()
@@ -1671,7 +1734,7 @@ public class SelectorRow<T: Equatable, VCType: TypedRowControllerType where VCTy
      */
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             if let presentationMode = presentationMode {
                 if let controller = presentationMode.createController(){
                     controller.row = self
@@ -1741,7 +1804,7 @@ public class GenericMultipleSelectorRow<T: Hashable, VCType: TypedRowControllerT
      */
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             if let presentationMode = presentationMode {
                 if let controller = presentationMode.createController(){
                     controller.row = self
@@ -2011,7 +2074,7 @@ public class Cell<T: Equatable> : BaseCell, TypedCellType {
     public override func update(){
         super.update()
         textLabel?.text = row.title
-        textLabel?.textColor = row.isDisabled ? .grayColor() : .blackColor()
+        textLabel?.textColor = (row.isDisabled && !row.isReadOnly) ? .grayColor() : .blackColor()
         detailTextLabel?.text = row.displayValueFor?(row.value)
     }
     
@@ -2216,7 +2279,7 @@ public protocol FormatterProtocol{
 //MARK: Predicate Machine
 
 enum ConditionType {
-    case Hidden, Disabled
+    case Hidden, Disabled, ReadOnly
 }
 
 /**
