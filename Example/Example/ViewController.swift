@@ -134,6 +134,16 @@ class RowsExampleViewController: FormViewController {
                         $0.value = true
                     }
             
+                <<< SliderRow() {
+                    $0.title = "SliderRow"
+                    $0.value = 5.0
+                }
+            
+                <<< StepperRow() {
+                    $0.title = "StepperRow"
+                    $0.value = 1.0
+                }
+            
             +++ Section("SegmentedRow examples")
             
                 <<< SegmentedRow<String>() { $0.options = ["One", "Two", "Three"] }
@@ -186,6 +196,21 @@ class RowsExampleViewController: FormViewController {
                         $0.selectorTitle = "Choose an Emoji!"
                     }
             
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
+            let section = form.last!
+        
+            section <<< PopoverSelectorRow<Emoji>() {
+                    $0.title = "PopoverSelectorRow"
+                    $0.options = [💁🏻, 🍐, 👦🏼, 🐗, 🐼, 🐻]
+                    $0.value = 💁🏻
+                    $0.selectorTitle = "Choose an Emoji!"
+                }
+        }
+        
+        let section = form.last!
+                    
+        section
                 <<< LocationRow(){
                         $0.title = "LocationRow"
                         $0.value = CLLocation(latitude: -34.91, longitude: -56.1646)
@@ -201,10 +226,10 @@ class RowsExampleViewController: FormViewController {
                         $0.value = [👦🏼, 🍐, 🐗]
                     }
                     .onPresent { from, to in
-                        to.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: from, action: "multipleSelectorDone:")
+                        to.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: from, action: #selector(RowsExampleViewController.multipleSelectorDone(_:)))
                     }
             
-            +++ Section("Generic picker")
+        form +++ Section("Generic picker")
             
                 <<< PickerRow<String>("Picker Row") { (row : PickerRow<String>) -> Void in
                 
@@ -225,6 +250,11 @@ class RowsExampleViewController: FormViewController {
                 <<< DecimalRow() {
                         $0.title = "DecimalRow"
                         $0.value = 5
+                        $0.formatter = DecimalFormatter()
+                        $0.useFormatterDuringInput = true
+                        //$0.useFormatterOnDidBeginEditing = true
+                    }.cellSetup { cell, _  in
+                        cell.textField.keyboardType = .NumberPad
                     }
                 
                 <<< URLRow() {
@@ -277,8 +307,27 @@ class RowsExampleViewController: FormViewController {
                         $0.title = "ZipCodeRow"
                         $0.placeholder = "90210"
                     }
+			
+			+++ Section("PostalAddressRow example")
+			
+				<<< PostalAddressRow(){
+					$0.title = "Address"
+					$0.streetPlaceholder = "Street"
+					$0.statePlaceholder = "State"
+					$0.postalCodePlaceholder = "ZipCode"
+					$0.cityPlaceholder = "City"
+					$0.countryPlaceholder = "Country"
+				
+					$0.value = PostalAddress(
+						street: "Dr. Mario Cassinoni 1011",
+						state: nil,
+						postalCode: "11200",
+						city: "Montevideo",
+						country: "Uruguay"
+					)
+				}
     }
-    
+	
     func multipleSelectorDone(item:UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
@@ -496,7 +545,7 @@ class NativeEventFormViewController : FormViewController {
         initializeForm()
         
         self.navigationItem.leftBarButtonItem?.target = self
-        self.navigationItem.leftBarButtonItem?.action = "cancelTapped:"
+        self.navigationItem.leftBarButtonItem?.action = #selector(NativeEventFormViewController.cancelTapped(_:))
     }
     
     private func initializeForm() {
@@ -512,7 +561,7 @@ class NativeEventFormViewController : FormViewController {
                 }
         
             +++
-            
+    
                 SwitchRow("All-day") {
                     $0.title = $0.tag
                 }.onChange { [weak self] row in
@@ -536,7 +585,7 @@ class NativeEventFormViewController : FormViewController {
                     startDate.inlineRow?.updateCell()
                     endDate.inlineRow?.updateCell()
                 }
-            
+        
             <<< DateTimeInlineRow("Starts") {
                     $0.title = $0.tag
                     $0.value = NSDate().dateByAddingTimeInterval(60*60*24)
@@ -886,9 +935,8 @@ class FormatterExample : FormViewController {
     class CurrencyFormatter : NSNumberFormatter, FormatterProtocol {
         override func getObjectValue(obj: AutoreleasingUnsafeMutablePointer<AnyObject?>, forString string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>) -> Bool {
             guard obj != nil else { return false }
-            var str : String
-            str = string.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
-            obj.memory = NSNumber(float: (Float(str) ?? 0.0)/Float(100))
+            let str = string.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
+            obj.memory = NSNumber(double: (Double(str) ?? 0.0)/Double(pow(10.0, Double(minimumFractionDigits))))
             return true
         }
         
