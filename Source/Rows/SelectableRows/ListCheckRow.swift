@@ -25,6 +25,9 @@ public class ListCheckCell<T: Equatable> : Cell<T>, CellType {
             tintColor = UIColor(red: red, green: green, blue: blue, alpha: 0.3)
             selectionStyle = .None
         }
+        else if row.isReadOnly {
+            selectionStyle = .None
+        }
         else {
             tintColor = UIColor(red: red, green: green, blue: blue, alpha: 1)
         }

@@ -19,7 +19,7 @@ public class ButtonCellOf<T: Equatable>: Cell<T>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
         accessoryType = .None
         editingAccessoryType = accessoryType
         textLabel?.textAlignment = .Center

@@ -138,7 +138,7 @@ public class _FieldCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T>, 
         }
         textField.delegate = self
         textField.text = row.displayValueFor?(row.value)
-        textField.enabled = !row.isDisabled
+        textField.enabled = !row.isDisabled && !row.isReadOnly
         textField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         textField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         if let placeholder = (row as? FieldRowConformance)?.placeholder {
@@ -152,7 +152,7 @@ public class _FieldCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T>, 
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textField.canBecomeFirstResponder()
+        return !row.isDisabled && !row.isReadOnly && textField.canBecomeFirstResponder()
     }
     
     public override func cellBecomeFirstResponder(direction: Direction) -> Bool {

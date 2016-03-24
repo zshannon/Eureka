@@ -20,6 +20,12 @@ protocol Hidable: Taggable {
     var isHidden : Bool { get }
 }
 
+protocol ReadOnlyable: Taggable {
+  func evaluateReadOnly()
+  var readOnly : Condition? { get set }
+  var isReadOnly : Bool { get }
+}
+
 public protocol KeyboardReturnHandler : BaseRowType {
     var keyboardReturnType : KeyboardReturnTypeConfiguration? { get set }
 }

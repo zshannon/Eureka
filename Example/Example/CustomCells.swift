@@ -171,13 +171,13 @@ public class _FloatLabelCell<T where T: Equatable, T: InputTypeInitiable>: Cell<
         detailTextLabel?.text = nil
         floatLabelTextField.attributedPlaceholder = NSAttributedString(string: row.title ?? "", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
         floatLabelTextField.text =  row.displayValueFor?(row.value)
-        floatLabelTextField.enabled = !row.isDisabled
+        floatLabelTextField.enabled = !row.isDisabled && !row.isReadOnly
         floatLabelTextField.titleTextColour = .lightGrayColor()
         floatLabelTextField.alpha = row.isDisabled ? 0.6 : 1
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && floatLabelTextField.canBecomeFirstResponder()
+        return !row.isDisabled && !row.isReadOnly && floatLabelTextField.canBecomeFirstResponder()
     }
     
     public override func cellBecomeFirstResponder(direction: Direction) -> Bool {

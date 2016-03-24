@@ -19,7 +19,7 @@ public class PushSelectorCell<T: Equatable> : Cell<T>, CellType {
         super.update()
         accessoryType = .DisclosureIndicator
         editingAccessoryType = accessoryType
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
     }
 }
 

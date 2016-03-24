@@ -38,8 +38,8 @@ public class DatePickerCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
-        datePicker.userInteractionEnabled = !row.isDisabled
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
+        datePicker.userInteractionEnabled = !row.isDisabled && !row.isReadOnly
         detailTextLabel?.text = nil
         textLabel?.text = nil
         datePicker.setDate(row.value ?? NSDate(), animated: row is CountDownPickerRow)

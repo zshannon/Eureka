@@ -144,6 +144,12 @@ class RowsExampleViewController: FormViewController {
                     $0.value = 1.0
                 }
             
+                <<< TextRow() {
+                    $0.title = "ReadOnlyRow"
+                    $0.value = "Read only content"
+                    $0.readOnly = true
+                }
+            
             +++ Section("SegmentedRow examples")
             
                 <<< SegmentedRow<String>() { $0.options = ["One", "Two", "Three"] }

@@ -112,4 +112,33 @@ class HelperMethodTests: BaseEurekaTests {
         
     }
     
+    func testReadOnlyRows(){
+        // Tests that a row set up as readOnly can not become firstResponder
+        
+        let checkRow = CheckRow("check"){ $0.readOnly = true }
+        let switchRow = SwitchRow("switch"){ $0.readOnly = true }
+        let segmentedRow = SegmentedRow<String>("segments"){ $0.readOnly = true; $0.options = ["a", "b"] }
+        let intRow = IntRow("int"){ $0.readOnly = true }
+        
+        formVC.form +++ checkRow <<< switchRow <<< segmentedRow <<< intRow
+        
+        checkRow.updateCell()
+        XCTAssertTrue(checkRow.cell.selectionStyle == .None)
+        XCTAssertTrue(checkRow.cell.textLabel?.textColor == UIColor.blackColor())
+        
+        switchRow.updateCell()
+        XCTAssertNotNil(switchRow.cell.switchControl)
+        XCTAssertFalse(switchRow.cell.switchControl!.enabled)
+        XCTAssertTrue(switchRow.cell.textLabel?.textColor == UIColor.blackColor())
+        
+        segmentedRow.updateCell()
+        XCTAssertFalse(segmentedRow.cell.segmentedControl.enabled)
+        XCTAssertTrue(segmentedRow.cell.textLabel?.textColor == UIColor.blackColor())
+        
+        intRow.updateCell()
+        XCTAssertFalse(intRow.cell.cellCanBecomeFirstResponder())
+        XCTAssertTrue(intRow.cell.textLabel?.textColor == UIColor.blackColor())
+        
+    }
+    
 }

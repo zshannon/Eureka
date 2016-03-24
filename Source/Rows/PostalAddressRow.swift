@@ -235,7 +235,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
         
         streetTextField.delegate = self
         streetTextField.text = row.value?.street
-        streetTextField.enabled = !row.isDisabled
+        streetTextField.enabled = !row.isDisabled && !row.isReadOnly
         streetTextField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         streetTextField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         streetTextField.autocorrectionType = .No
@@ -244,7 +244,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
         
         stateTextField.delegate = self
         stateTextField.text = row.value?.state
-        stateTextField.enabled = !row.isDisabled
+        stateTextField.enabled = !row.isDisabled && !row.isReadOnly
         stateTextField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         stateTextField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         stateTextField.autocorrectionType = .No
@@ -253,7 +253,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
         
         postalCodeTextField.delegate = self
         postalCodeTextField.text = row.value?.postalCode
-        postalCodeTextField.enabled = !row.isDisabled
+        postalCodeTextField.enabled = !row.isDisabled && !row.isReadOnly
         postalCodeTextField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         postalCodeTextField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         postalCodeTextField.autocorrectionType = .No
@@ -262,7 +262,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
         
         cityTextField.delegate = self
         cityTextField.text = row.value?.city
-        cityTextField.enabled = !row.isDisabled
+        cityTextField.enabled = !row.isDisabled && !row.isReadOnly
         cityTextField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         cityTextField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         cityTextField.autocorrectionType = .No
@@ -271,7 +271,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
         
         countryTextField.delegate = self
         countryTextField.text = row.value?.country
-        countryTextField.enabled = !row.isDisabled
+        countryTextField.enabled = !row.isDisabled && !row.isReadOnly
         countryTextField.textColor = row.isDisabled ? .grayColor() : .blackColor()
         countryTextField.font = .preferredFontForTextStyle(UIFontTextStyleBody)
         countryTextField.autocorrectionType = .No
@@ -322,7 +322,7 @@ public class PostalAddressCell<T: PostalAddressType>: Cell<T>, CellType, PostalA
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && (
+        return !row.isDisabled && !row.isReadOnly && (
             streetTextField.canBecomeFirstResponder() ||
                 stateTextField.canBecomeFirstResponder() ||
                 postalCodeTextField.canBecomeFirstResponder() ||

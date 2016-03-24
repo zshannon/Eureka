@@ -53,7 +53,7 @@ public class SegmentedCell<T: Equatable> : Cell<T>, CellType {
         
         updateSegmentedControl()
         segmentedControl.selectedSegmentIndex = selectedIndex() ?? UISegmentedControlNoSegment
-        segmentedControl.enabled = !row.isDisabled
+        segmentedControl.enabled = !row.isDisabled && !row.isReadOnly
     }
     
     func valueChanged() {

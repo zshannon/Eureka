@@ -38,7 +38,7 @@ public class DateCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
         detailTextLabel?.text = row.displayValueFor?(row.value)
         datePicker.setDate(row.value ?? NSDate(), animated: row is CountDownPickerRow)
         datePicker.minimumDate = (row as? DatePickerRowProtocol)?.minimumDate
@@ -85,7 +85,7 @@ public class DateCell : Cell<NSDate>, CellType {
     }
     
     public override func canBecomeFirstResponder() -> Bool {
-        return !row.isDisabled;
+        return !row.isDisabled && !row.isReadOnly;
     }
 }
 

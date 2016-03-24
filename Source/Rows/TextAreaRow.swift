@@ -72,7 +72,7 @@ public class _TextAreaCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T
         super.update()
         textLabel?.text = nil
         detailTextLabel?.text = nil
-        textView.editable = !row.isDisabled
+        textView.editable = !row.isDisabled && !row.isReadOnly
         textView.textColor = row.isDisabled ? .grayColor() : .blackColor()
         textView.text = row.displayValueFor?(row.value)
         placeholderLabel.text = (row as? TextAreaConformance)?.placeholder
@@ -81,7 +81,7 @@ public class _TextAreaCell<T where T: Equatable, T: InputTypeInitiable> : Cell<T
     }
     
     public override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textView.canBecomeFirstResponder()
+        return !row.isDisabled && !row.isReadOnly && textView.canBecomeFirstResponder()
     }
     
     public override func cellBecomeFirstResponder(fromDiretion: Direction) -> Bool {

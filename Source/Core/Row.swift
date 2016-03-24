@@ -31,6 +31,11 @@ public class RowOf<T: Equatable>: BaseRow {
                     (rowObserver as? Disableable)?.evaluateDisabled()
                 }
             }
+            if let rowObservers = form.rowObservers[t]?[.ReadOnly]{
+                for rowObserver in rowObservers {
+                    (rowObserver as? ReadOnlyable)?.evaluateReadOnly()
+                }
+            }
         }
     }
     
@@ -109,7 +114,7 @@ public class Row<T: Equatable, Cell: CellType where Cell: TypedCellType, Cell: B
      */
     public override func didSelect() {
         super.didSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             cell?.didSelect()
         }
         customDidSelect()

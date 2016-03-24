@@ -26,10 +26,12 @@ public final class CheckCell : Cell<Bool>, CellType {
         tintColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         if row.isDisabled {
             tintColor = UIColor(red: red, green: green, blue: blue, alpha: 0.3)
-            selectionStyle = .None
         }
         else {
             tintColor = UIColor(red: red, green: green, blue: blue, alpha: 1)
+        }
+        if row.isDisabled || row.isReadOnly {
+            selectionStyle = .None
         }
     }
     

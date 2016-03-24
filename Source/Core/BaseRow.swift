@@ -52,11 +52,18 @@ public class BaseRow : BaseRowType {
         didSet  { addToHiddenRowObservers() }
     }
     
+    public var readOnly : Condition? {
+        willSet { removeFromReadOnlyRowObservers() }
+        didSet  { addToReadOnlyRowObservers() }
+    }
+    
     /// Returns if this row is currently disabled or not
     public var isDisabled : Bool { return disabledCache }
     
     /// Returns if this row is currently hidden or not
     public var isHidden : Bool { return hiddenCache }
+    
+    public var isReadOnly : Bool { return readOnlyCache }
     
     /// The section to which this row belongs.
     public weak var section: Section?
@@ -103,6 +110,13 @@ public class BaseRow : BaseRowType {
             }
         }
     }
+    private var readOnlyCache = false {
+        willSet {
+            if newValue == true && readOnlyCache == false  {
+                baseCell.cellResignFirstResponder()
+            }
+        }
+    }
 }
 
 extension BaseRow {
@@ -140,6 +154,17 @@ extension BaseRow {
         updateCell()
     }
     
+    public final func evaluateReadOnly() {
+        guard let ro = readOnly, form = section?.form else { return }
+        switch ro {
+        case .Function(_ , let callback):
+            readOnlyCache = callback(form)
+        case .Predicate(let predicate):
+            readOnlyCache = predicate.evaluateWithObject(self, substitutionVariables: form.dictionaryValuesToEvaluatePredicate())
+        }
+        updateCell()
+    }
+    
     final func wasAddedToFormInSection(section: Section) {
         self.section = section
         if let t = tag {
@@ -150,6 +175,7 @@ extension BaseRow {
         addToRowObservers()
         evaluateHidden()
         evaluateDisabled()
+        evaluateReadOnly()
     }
     
     final func addToHiddenRowObservers() {
@@ -172,9 +198,20 @@ extension BaseRow {
         }
     }
     
+    final func addToReadOnlyRowObservers() {
+        guard let ro = readOnly else { return }
+        switch ro {
+        case .Function(let tags, _):
+            section?.form?.addRowObservers(self, rowTags: tags, type: .ReadOnly)
+        case .Predicate(let predicate):
+            section?.form?.addRowObservers(self, rowTags: predicate.predicateVars, type: .ReadOnly)
+        }
+    }
+    
     final func addToRowObservers(){
         addToHiddenRowObservers()
         addToDisabledRowObservers()
+        addToReadOnlyRowObservers()
     }
     
     final func willBeRemovedFromForm(){
@@ -207,14 +244,25 @@ extension BaseRow {
         }
     }
     
+    final func removeFromReadOnlyRowObservers() {
+        guard let ro = readOnly else { return }
+        switch ro {
+        case .Function(let tags, _):
+            section?.form?.removeRowObservers(self, rows: tags, type: .ReadOnly)
+        case .Predicate(let predicate):
+            section?.form?.removeRowObservers(self, rows: predicate.predicateVars, type: .ReadOnly)
+        }
+    }
+    
     
     final func removeFromRowObservers(){
         removeFromHiddenRowObservers()
         removeFromDisabledRowObservers()
+        removeFromReadOnlyRowObservers()
     }
 }
 
-extension BaseRow: Equatable, Hidable, Disableable {}
+extension BaseRow: Equatable, Hidable, Disableable, ReadOnlyable {}
 
 
 extension BaseRow {

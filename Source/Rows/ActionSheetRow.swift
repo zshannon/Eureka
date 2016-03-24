@@ -19,7 +19,7 @@ public class AlertSelectorCell<T: Equatable> : Cell<T>, CellType {
         super.update()
         accessoryType = .None
         editingAccessoryType = accessoryType
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
     }
     
     public override func didSelect() {

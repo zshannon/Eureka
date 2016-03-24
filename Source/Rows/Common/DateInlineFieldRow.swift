@@ -24,7 +24,7 @@ public class DateInlineCell : Cell<NSDate>, CellType {
     
     public override func update() {
         super.update()
-        selectionStyle = row.isDisabled ? .None : .Default
+        selectionStyle = (row.isDisabled || row.isReadOnly) ? .None : .Default
         detailTextLabel?.text = row.displayValueFor?(row.value)
     }
     

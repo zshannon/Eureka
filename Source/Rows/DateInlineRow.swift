@@ -109,7 +109,7 @@ public final class DateInlineRow_<T>: _DateInlineRow, RowType, InlineRowType {
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -133,7 +133,7 @@ public final class DateTimeInlineRow_<T>: _DateTimeInlineRow, RowType, InlineRow
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -158,7 +158,7 @@ public final class TimeInlineRow_<T>: _TimeInlineRow, RowType, InlineRowType {
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }
@@ -181,7 +181,7 @@ public final class CountDownInlineRow_<T>: _CountDownInlineRow, RowType, InlineR
     
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             toggleInlineRow()
         }
     }

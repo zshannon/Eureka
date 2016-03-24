@@ -56,7 +56,7 @@ public class StepperCell : Cell<Double>, CellType {
     
     public override func update() {
         super.update()
-        stepper.enabled = !row.isDisabled
+        stepper.enabled = !row.isDisabled && !row.isReadOnly
         stepper.alpha = row.isDisabled ? 0.3 : 1.0
         valueLabel.alpha = row.isDisabled ? 0.3 : 1.0
     }

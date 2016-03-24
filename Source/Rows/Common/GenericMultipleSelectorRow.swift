@@ -44,7 +44,7 @@ public class GenericMultipleSelectorRow<T: Hashable, Cell: CellType, VCType: Typ
      */
     public override func customDidSelect() {
         super.customDidSelect()
-        if !isDisabled {
+        if !isDisabled && !isReadOnly {
             if let presentationMode = presentationMode {
                 if let controller = presentationMode.createController(){
                     controller.row = self

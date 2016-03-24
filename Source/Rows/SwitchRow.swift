@@ -38,7 +38,7 @@ public class SwitchCell : Cell<Bool>, CellType {
     public override func update() {
         super.update()
         switchControl?.on = row.value ?? false
-        switchControl?.enabled = !row.isDisabled
+        switchControl?.enabled = !row.isDisabled && !row.isReadOnly
     }
     
     func valueChanged() {
